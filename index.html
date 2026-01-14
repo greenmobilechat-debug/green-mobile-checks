@@ -299,21 +299,12 @@
             border: 2px solid transparent;
             position: relative;
             overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        .stat-card * {
-            pointer-events: none;
+            touch-action: manipulation;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .stat-card:active {
-            transform: scale(0.98);
         }
 
         .stat-card.active {
@@ -976,7 +967,7 @@
 
         <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card total active" data-group="all" onclick="filterByGroup('all')">
+            <div class="stat-card total active" data-group="all">
                 <div class="stat-card-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -986,7 +977,7 @@
                 <p>סה"כ צ'קים</p>
                 <div class="amount" id="totalAmount">₪0</div>
             </div>
-            <div class="stat-card pending" data-group="topics" onclick="filterByGroup('topics')">
+            <div class="stat-card pending" data-group="topics">
                 <div class="stat-card-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -996,7 +987,7 @@
                 <p>לפני פרעון</p>
                 <div class="amount" id="pendingAmount">₪0</div>
             </div>
-            <div class="stat-card completed" data-group="group_title" onclick="filterByGroup('group_title')">
+            <div class="stat-card completed" data-group="group_title">
                 <div class="stat-card-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1006,7 +997,7 @@
                 <p>אחרי פרעון</p>
                 <div class="amount" id="completedAmount">₪0</div>
             </div>
-            <div class="stat-card cancelled" data-group="group_mkzhynwd" onclick="filterByGroup('group_mkzhynwd')">
+            <div class="stat-card cancelled" data-group="group_mkzhynwd">
                 <div class="stat-card-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -1694,6 +1685,21 @@
                 currentFilters.dateTo = e.target.value;
                 applyFilters();
                 updateActiveFilters();
+            });
+            
+            // Stat cards - touch and click support
+            document.querySelectorAll('.stat-card').forEach(card => {
+                const group = card.dataset.group;
+                
+                // Handle both touch and click
+                const handleTap = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    filterByGroup(group);
+                };
+                
+                card.addEventListener('click', handleTap);
+                card.addEventListener('touchend', handleTap, { passive: false });
             });
             
             // Keyboard shortcuts

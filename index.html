@@ -799,6 +799,18 @@
             color: #1a1a2e;
         }
 
+        .bank-logo {
+            height: 20px;
+            width: auto;
+            margin-top: 4px;
+            opacity: 0.9;
+        }
+
+        .check-number-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
         .check-amount {
             font-size: 1.4rem;
             font-weight: 700;
@@ -1436,6 +1448,23 @@
             'מע״מ': '#175a63', 'א.ד.ד ניהול': '#9aadbd', 'פנינה פאי': '#757575'
         };
 
+        // Bank logos (using official logo URLs)
+        const bankLogos = {
+            'בנק פועלים': 'https://upload.wikimedia.org/wikipedia/he/thumb/b/b1/BankHapoalim.svg/200px-BankHapoalim.svg.png',
+            'בנק לאומי': 'https://upload.wikimedia.org/wikipedia/he/thumb/e/e7/Leumi_2017.svg/200px-Leumi_2017.svg.png',
+            'בנק מזרחי': 'https://upload.wikimedia.org/wikipedia/he/thumb/3/34/%D7%9C%D7%95%D7%92%D7%95_%D7%A9%D7%9C_%D7%91%D7%A0%D7%A7_%D7%9E%D7%96%D7%A8%D7%97%D7%99-%D7%98%D7%A4%D7%97%D7%95%D7%AA.svg/200px-%D7%9C%D7%95%D7%92%D7%95_%D7%A9%D7%9C_%D7%91%D7%A0%D7%A7_%D7%9E%D7%96%D7%A8%D7%97%D7%99-%D7%98%D7%A4%D7%97%D7%95%D7%AA.svg.png',
+            'הבנק הבינלאומי': 'https://upload.wikimedia.org/wikipedia/he/thumb/5/53/Logo_of_First_International_Bank_of_Israel.svg/200px-Logo_of_First_International_Bank_of_Israel.svg.png'
+        };
+
+        // Get bank logo HTML
+        function getBankLogo(bankName) {
+            const logoUrl = bankLogos[bankName];
+            if (logoUrl) {
+                return `<img src="${logoUrl}" alt="${bankName}" class="bank-logo" onerror="this.style.display='none'">`;
+            }
+            return '';
+        }
+
         // State
         let allChecks = [];
         let filteredChecks = [];
@@ -1517,7 +1546,7 @@
                                         id
                                         title
                                     }
-                                    column_values(ids: ["status", "numbers__1", "date__1", "files__1", "text7__1"]) {
+                                    column_values(ids: ["status", "numbers__1", "date__1", "files__1", "text7__1", "dropdown__1"]) {
                                         id
                                         text
                                     }
@@ -1561,6 +1590,7 @@
                             date__1: dueDate,
                             files__1: fileUrl,
                             notes: cols.text7__1 || '',
+                            bank: cols.dropdown__1 || '',
                             group: item.group.id
                         };
                     })
@@ -1835,6 +1865,7 @@
                 const supplierColor = supplierColors[check.status] || '#64748B';
                 const hasImage = check.files__1 && check.files__1.length > 0;
                 const isCancelled = check.group === 'group_mkzhynwd';
+                const bankLogo = getBankLogo(check.bank);
                 
                 return `
                     <div class="check-card ${isCancelled ? 'cancelled-check' : ''}" style="animation-delay: ${index * 0.03}s">
@@ -1845,7 +1876,10 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
-                                <span class="check-num-text">צ'ק #${check.name}</span>
+                                <div class="check-number-wrapper">
+                                    <span class="check-num-text">צ'ק #${check.name}</span>
+                                    ${bankLogo}
+                                </div>
                             </div>
                             <span class="check-amount">₪${formatNumber(check.numbers__1)}</span>
                         </div>

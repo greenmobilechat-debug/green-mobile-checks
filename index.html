@@ -241,6 +241,49 @@
             }
         }
 
+        @media (max-width: 600px) {
+            .header {
+                padding: 16px;
+            }
+            
+            .header-content {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .logo-section {
+                order: 1;
+                flex: 1;
+            }
+            
+            .header-actions {
+                order: 2;
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .live-indicator {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .refresh-btn, .monday-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .logo-text h1 {
+                font-size: 1.2rem;
+            }
+        }
+
         @media (max-width: 500px) {
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -1139,6 +1182,12 @@
                                     column_values(ids: ["status", "numbers__1", "date__1", "files__1", "text7__1"]) {
                                         id
                                         text
+                                        ... on FileValue {
+                                            files {
+                                                public_url
+                                                name
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1161,8 +1210,14 @@
                 allChecks = allItems
                     .map(item => {
                         const cols = {};
+                        let fileUrl = null;
+                        
                         item.column_values.forEach(col => {
                             cols[col.id] = col.text;
+                            // Get file URL if available
+                            if (col.id === 'files__1' && col.files && col.files.length > 0) {
+                                fileUrl = col.files[0].public_url;
+                            }
                         });
                         
                         const amount = parseFloat(cols.numbers__1) || 0;
@@ -1174,7 +1229,7 @@
                             status: cols.status || '',
                             numbers__1: amount,
                             date__1: dueDate,
-                            files__1: cols.files__1 || null,
+                            files__1: fileUrl,
                             notes: cols.text7__1 || '',
                             group: item.group.id
                         };

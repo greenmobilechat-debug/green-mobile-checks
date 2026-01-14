@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול צ'קים - Green Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            color: #1a1a2e;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: #4eccc6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        .loading-subtext {
+            color: rgba(255,255,255,0.6);
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 24px;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4eccc6 0%, #44a3aa 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(78, 204, 198, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #4eccc6;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .refresh-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .refresh-btn.loading svg {
+            animation: spin 1s linear infinite;
+        }
+
+        .refresh-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .monday-btn {
+            background: linear-gradient(135deg, #ff3d57 0%, #ff6b6b 100%);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .monday-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 61, 87, 0.4);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Greeting */
+        .greeting {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .greeting h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .greeting p {
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stat-card.active {
+            border-color: #4eccc6;
+            box-shadow: 0 10px 30px rgba(78, 204, 198, 0.2);
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-card-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .stat-card.total .stat-card-icon { background: #e0f2fe; color: #0284c7; }
+        .stat-card.pending .stat-card-icon { background: #fef3c7; color: #f59e0b; }
+        .stat-card.completed .stat-card-icon { background: #d1fae5; color: #10b981; }
+        .stat-card.cancelled .stat-card-icon { background: #fee2e2; color: #ef4444; }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .stat-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .stat-card .amount {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        /* Summary Banner */
+        .summary-banner {
+            background: linear-gradient(135deg, #4eccc6 0%, #44a3aa 100%);
+            border-radius: 16px;
+            padding: 20px 24px;
+            color: white;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .summary-banner.visible {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .summary-amount {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .summary-count {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .filters-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        .filters-header svg {
+            width: 20px;
+            height: 20px;
+            color: #4eccc6;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-box svg {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #94a3b8;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 48px 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Heebo', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4eccc6;
+            box-shadow: 0 0 0 3px rgba(78, 204, 198, 0.1);
+        }
+
+        .clear-search {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #e2e8f0;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clear-search.visible {
+            display: flex;
+        }
+
+        .clear-search svg {
+            width: 14px;
+            height: 14px;
+            position: static;
+            transform: none;
+        }
+
+        .quick-dates {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .quick-date-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-date-btn:hover {
+            border-color: #4eccc6;
+            background: #f0fdfa;
+        }
+
+        .quick-date-btn.active {
+            background: #4eccc6;
+            border-color: #4eccc6;
+            color: white;
+        }
+
+        .quick-date-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .date-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .date-input-group label {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .date-input {
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #4eccc6;
+        }
+
+        .active-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .filter-tag {
+            background: #f0fdfa;
+            border: 1px solid #4eccc6;
+            color: #0f766e;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-tag button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+        }
+
+        .filter-tag button svg {
+            width: 14px;
+            height: 14px;
+            color: #0f766e;
+        }
+
+        /* Results Header */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .results-count {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .results-count strong {
+            color: #1a1a2e;
+        }
+
+        .sort-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .sort-btn:hover {
+            border-color: #4eccc6;
+        }
+
+        .sort-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Checks List */
+        .checks-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .check-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .check-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .check-card.cancelled-check {
+            opacity: 0.7;
+            background: #fef2f2;
+        }
+
+        .check-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .check-number {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .check-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0fdfa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .check-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #4eccc6;
+        }
+
+        .check-num-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1a1a2e;
+        }
+
+        .check-amount {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .check-card-body {
+            display: grid;
+            gap: 12px;
+        }
+
+        .check-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .check-info-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .check-info-value {
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+
+        .supplier-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .check-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .check-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .check-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .check-status.soon { color: #f59e0b; }
+        .check-status.soon .check-status-dot { background: #f59e0b; }
+        .check-status.future { color: #10b981; }
+        .check-status.future .check-status-dot { background: #10b981; }
+        .check-status.past { color: #6366f1; }
+        .check-status.past .check-status-dot { background: #6366f1; }
+        .check-status.cancelled { color: #ef4444; }
+        .check-status.cancelled .check-status-dot { background: #ef4444; }
+
+        .check-days {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .view-image-btn {
+            background: linear-gradient(135deg, #4eccc6 0%, #44a3aa 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .view-image-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(78, 204, 198, 0.4);
+        }
+
+        .view-image-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .empty-icon svg {
+            width: 40px;
+            height: 40px;
+            color: #94a3b8;
+        }
+
+        .empty-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        /* Image Modal */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+        }
+
+        .modal-info {
+            color: white;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 1.1rem;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Error State */
+        .error-state {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .error-state h3 {
+            color: #dc2626;
+            margin-bottom: 12px;
+        }
+
+        .error-state p {
+            color: #7f1d1d;
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1rem;
+        }
+
+        .retry-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* Last Update */
+        .last-update {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 24px;
+            padding-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">טוען נתונים ממאנדיי...</div>
+        <div class="loading-subtext">מתחבר לבורד צ'קים</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>ניהול צ'קים</h1>
+                    <p>Green Mobile</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    <span>מחובר למאנדיי</span>
+                </div>
+                <button class="refresh-btn" onclick="loadData()" id="refreshBtn">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    רענן
+                </button>
+                <a href="https://green-mobile.monday.com/boards/1689501530" target="_blank" class="monday-btn">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Monday
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Greeting -->
+        <div class="greeting">
+            <h2 id="greeting">צהריים טובים!</h2>
+            <p>סיכום צ'קים</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card total active" data-group="all" onclick="filterByGroup('all')">
+                <div class="stat-card-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h3 id="totalCount">0</h3>
+                <p>סה"כ צ'קים</p>
+                <div class="amount" id="totalAmount">₪0</div>
+            </div>
+            <div class="stat-card pending" data-group="topics" onclick="filterByGroup('topics')">
+                <div class="stat-card-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 id="pendingCount">0</h3>
+                <p>לפני פרעון</p>
+                <div class="amount" id="pendingAmount">₪0</div>
+            </div>
+            <div class="stat-card completed" data-group="group_title" onclick="filterByGroup('group_title')">
+                <div class="stat-card-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 id="completedCount">0</h3>
+                <p>אחרי פרעון</p>
+                <div class="amount" id="completedAmount">₪0</div>
+            </div>
+            <div class="stat-card cancelled" data-group="group_mkzhynwd" onclick="filterByGroup('group_mkzhynwd')">
+                <div class="stat-card-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                </div>
+                <h3 id="cancelledCount">0</h3>
+                <p>בוטלו</p>
+                <div class="amount" id="cancelledAmount">₪0</div>
+            </div>
+        </div>
+
+        <!-- Summary Banner -->
+        <div class="summary-banner" id="summaryBanner">
+            <div>
+                <div class="summary-title" id="summaryTitle">סיכום לתאריכים נבחרים</div>
+                <div class="summary-count" id="summaryCount">0 צ'קים</div>
+            </div>
+            <div class="summary-amount" id="summaryAmount">₪0</div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-header">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                סינון וחיפוש
+            </div>
+            
+            <div class="search-box">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" class="search-input" id="searchInput" placeholder="חיפוש לפי מספר צ'ק, ספק, סכום או הערות...">
+                <button class="clear-search" id="clearSearch" onclick="clearSearch()">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="quick-dates">
+                <button class="quick-date-btn" onclick="setQuickDate('today')">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    היום
+                </button>
+                <button class="quick-date-btn" onclick="setQuickDate('week')">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    השבוע
+                </button>
+                <button class="quick-date-btn" onclick="setQuickDate('nextWednesday')">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    רביעי הקרוב
+                </button>
+                <button class="quick-date-btn" onclick="setQuickDate('month')">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    החודש
+                </button>
+                <button class="quick-date-btn" onclick="clearDateFilters()">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    נקה
+                </button>
+            </div>
+
+            <div class="date-range">
+                <div class="date-input-group">
+                    <label>מתאריך פרעון</label>
+                    <input type="date" class="date-input" id="dateFrom">
+                </div>
+                <div class="date-input-group">
+                    <label>עד תאריך פרעון</label>
+                    <input type="date" class="date-input" id="dateTo">
+                </div>
+            </div>
+
+            <div class="active-filters" id="activeFilters"></div>
+        </div>
+
+        <!-- Results Header -->
+        <div class="results-header">
+            <div class="results-count">
+                <strong id="visibleCount">0</strong> צ'קים מוצגים
+            </div>
+            <button class="sort-btn" onclick="toggleSort()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+                <span id="sortLabel">מהקרוב</span>
+            </button>
+        </div>
+
+        <!-- Checks List -->
+        <div class="checks-list" id="checksList"></div>
+
+        <!-- Last Update -->
+        <div class="last-update" id="lastUpdate"></div>
+    </main>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal" onclick="closeImageModal(event)">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeImageModal()">&times;</button>
+            <img src="" alt="Check Image" class="modal-image" id="modalImage">
+            <div class="modal-info" id="modalInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjMyMzY0Mjg4MSwiYWFpIjoxMSwidWlkIjo0MTE3NjM0OSwiaWFkIjoiMjAyNC0wMi0yMVQwNzo1MjowOS4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTYwNjYwNjgsInJnbiI6ImV1YzEifQ.FJvnBDJyLzHs6aJtEMMAR7BMRIvWYPV13fKPmHEG4ko';
+        const BOARD_ID = '1689501530';
+        const API_URL = 'https://api.monday.com/v2';
+
+        // Supplier colors
+        const supplierColors = {
+            'סי דאטה': '#fdab3d', 'בנדא מגנטיק': '#00c875', 'המילטון': '#ff6d3b',
+            'סיטי סל': '#e484bd', 'טלזר 019': '#ff7575', 'סארו קום': '#faa1f1',
+            'GSM': '#579bfc', 'עיריית אשדוד': '#cab641', 'דינמיקה': '#ffcb00',
+            'Mobile BD': '#784bd1', 'הוט מובייל': '#bb3354', 'סלטק ר.ד.ל בע״מ': '#ff007f',
+            'NST': '#216edf', 'טל טלקום': '#bda8f9', 'שמדר': '#9cd326',
+            'ארט מובייל': '#66ccff', 'מודן אלקטרוניקה': '#cd9282', 'CELL NOW': '#4eccc6',
+            'סאני תקשורת': '#bca58a', 'מומדיה': '#a1e3f6', 'STS': '#ff5ac4',
+            'מאנקי טיים': '#401694', 'מובילינק ייבוא ושיווק': '#007eb5', 'iDigital': '#7e3b8a',
+            'וונדרלנד': '#9d50dd', 'Mega Sale': '#225091', 'אולפון יבוא וסחר בעמ': '#74afcc',
+            'גן העיר': '#5559df', 'דור תקשורת בע״מ': '#ffadad', 'שכירות - סיטי': '#037f4c',
+            'בי קונקט': '#9d99b9', 'בנק לאומי': '#a9bee8', 'אמפר תקשורת': '#563e3e',
+            'אסי סלולר בע״מ': '#7f5347', 'מובייל גיים': '#333333', 'יופי תקשורת': '#df2f4a',
+            'מע״מ': '#175a63', 'א.ד.ד ניהול': '#9aadbd', 'פנינה פאי': '#757575'
+        };
+
+        // State
+        let allChecks = [];
+        let filteredChecks = [];
+        let currentFilters = { search: '', dateFrom: '', dateTo: '', group: 'all' };
+        let sortOrder = 'asc';
+
+        // Calculate date range (3 months back, all future)
+        function getDateRange() {
+            const today = new Date();
+            const threeMonthsAgo = new Date(today);
+            threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+            return {
+                from: threeMonthsAgo.toISOString().split('T')[0],
+                today: today.toISOString().split('T')[0]
+            };
+        }
+
+        // Fetch data from Monday.com API
+        async function fetchFromMonday(query) {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': API_TOKEN
+                },
+                body: JSON.stringify({ query })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return await response.json();
+        }
+
+        // Load all checks from Monday.com
+        async function loadData() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.classList.add('loading');
+            
+            try {
+                const dateRange = getDateRange();
+                let allItems = [];
+                let cursor = null;
+                
+                // Fetch all pages
+                do {
+                    const cursorParam = cursor ? `cursor: "${cursor}"` : '';
+                    const query = `query {
+                        boards(ids: [${BOARD_ID}]) {
+                            items_page(limit: 500 ${cursorParam ? ', ' + cursorParam : ''}) {
+                                cursor
+                                items {
+                                    id
+                                    name
+                                    group {
+                                        id
+                                        title
+                                    }
+                                    column_values(ids: ["status", "numbers__1", "date__1", "files__1", "text7__1"]) {
+                                        id
+                                        text
+                                    }
+                                }
+                            }
+                        }
+                    }`;
+                    
+                    const result = await fetchFromMonday(query);
+                    
+                    if (result.errors) {
+                        throw new Error(result.errors[0].message);
+                    }
+                    
+                    const itemsPage = result.data.boards[0].items_page;
+                    allItems = allItems.concat(itemsPage.items);
+                    cursor = itemsPage.cursor;
+                    
+                } while (cursor);
+                
+                // Process items
+                allChecks = allItems
+                    .map(item => {
+                        const cols = {};
+                        item.column_values.forEach(col => {
+                            cols[col.id] = col.text;
+                        });
+                        
+                        const amount = parseFloat(cols.numbers__1) || 0;
+                        const dueDate = cols.date__1 || '';
+                        
+                        return {
+                            id: item.id,
+                            name: item.name,
+                            status: cols.status || '',
+                            numbers__1: amount,
+                            date__1: dueDate,
+                            files__1: cols.files__1 || null,
+                            notes: cols.text7__1 || '',
+                            group: item.group.id
+                        };
+                    })
+                    .filter(check => {
+                        // Include: future checks OR last 3 months (completed)
+                        if (!check.date__1) return false;
+                        return check.date__1 >= dateRange.from;
+                    });
+                
+                // Update UI
+                hideLoading();
+                updateStats();
+                applyFilters();
+                updateLastUpdate();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                hideLoading();
+                showError(error.message);
+            } finally {
+                refreshBtn.classList.remove('loading');
+            }
+        }
+
+        // Show error state
+        function showError(message) {
+            document.getElementById('checksList').innerHTML = `
+                <div class="error-state">
+                    <h3>שגיאה בטעינת נתונים</h3>
+                    <p>${message}</p>
+                    <button class="retry-btn" onclick="loadData()">נסה שוב</button>
+                </div>
+            `;
+        }
+
+        // Update last update time
+        function updateLastUpdate() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('he-IL');
+            document.getElementById('lastUpdate').textContent = `עדכון אחרון: ${dateStr} ${timeStr}`;
+        }
+
+        // Hide loading screen
+        function hideLoading() {
+            document.getElementById('loadingScreen').classList.add('hidden');
+        }
+
+        // Set greeting based on time
+        function setGreeting() {
+            const hour = new Date().getHours();
+            let greeting = 'צהריים טובים!';
+            if (hour < 12) greeting = 'בוקר טוב!';
+            else if (hour >= 17) greeting = 'ערב טוב!';
+            document.getElementById('greeting').textContent = greeting;
+        }
+
+        // Format number with commas
+        function formatNumber(num) {
+            return Math.round(num).toLocaleString('he-IL');
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('he-IL');
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const dateRange = getDateRange();
+            
+            filteredChecks = allChecks.filter(check => {
+                // Group filter
+                if (currentFilters.group === 'all') {
+                    // Hide cancelled in "all" view
+                    if (check.group === 'group_mkzhynwd') return false;
+                } else if (currentFilters.group !== check.group) {
+                    return false;
+                }
+                
+                // Search filter
+                if (currentFilters.search) {
+                    const searchLower = currentFilters.search.toLowerCase();
+                    const matchesName = check.name.toLowerCase().includes(searchLower);
+                    const matchesSupplier = check.status && check.status.toLowerCase().includes(searchLower);
+                    const matchesNotes = check.notes && check.notes.toLowerCase().includes(searchLower);
+                    const searchNum = parseFloat(currentFilters.search.replace(/,/g, ''));
+                    const matchesAmount = !isNaN(searchNum) && check.numbers__1.toString().includes(searchNum.toString());
+                    if (!matchesName && !matchesSupplier && !matchesNotes && !matchesAmount) return false;
+                }
+                
+                // Date filters
+                if (currentFilters.dateFrom && check.date__1 < currentFilters.dateFrom) return false;
+                if (currentFilters.dateTo && check.date__1 > currentFilters.dateTo) return false;
+                
+                return true;
+            });
+            
+            // Sort
+            filteredChecks.sort((a, b) => {
+                const dateA = a.date__1 || '9999-12-31';
+                const dateB = b.date__1 || '9999-12-31';
+                return sortOrder === 'asc' ? dateA.localeCompare(dateB) : dateB.localeCompare(dateA);
+            });
+            
+            renderChecks();
+            updateSummaryBanner();
+            document.getElementById('visibleCount').textContent = filteredChecks.length;
+        }
+
+        // Update stats
+        function updateStats() {
+            const dateRange = getDateRange();
+            
+            const pending = allChecks.filter(c => c.group === 'topics');
+            const completed = allChecks.filter(c => c.group === 'group_title');
+            const cancelled = allChecks.filter(c => c.group === 'group_mkzhynwd');
+            const total = allChecks.filter(c => c.group !== 'group_mkzhynwd');
+            
+            document.getElementById('totalCount').textContent = total.length;
+            document.getElementById('totalAmount').textContent = `₪${formatNumber(total.reduce((s, c) => s + c.numbers__1, 0))}`;
+            
+            document.getElementById('pendingCount').textContent = pending.length;
+            document.getElementById('pendingAmount').textContent = `₪${formatNumber(pending.reduce((s, c) => s + c.numbers__1, 0))}`;
+            
+            document.getElementById('completedCount').textContent = completed.length;
+            document.getElementById('completedAmount').textContent = `₪${formatNumber(completed.reduce((s, c) => s + c.numbers__1, 0))}`;
+            
+            document.getElementById('cancelledCount').textContent = cancelled.length;
+            document.getElementById('cancelledAmount').textContent = `₪${formatNumber(cancelled.reduce((s, c) => s + c.numbers__1, 0))}`;
+        }
+
+        // Update summary banner
+        function updateSummaryBanner() {
+            const banner = document.getElementById('summaryBanner');
+            if (currentFilters.dateFrom || currentFilters.dateTo) {
+                const totalAmount = filteredChecks.reduce((s, c) => s + c.numbers__1, 0);
+                let title = 'סיכום לתאריכים נבחרים';
+                if (currentFilters.dateFrom === currentFilters.dateTo && currentFilters.dateFrom) {
+                    title = `סיכום ל-${formatDate(currentFilters.dateFrom)}`;
+                }
+                document.getElementById('summaryTitle').textContent = title;
+                document.getElementById('summaryAmount').textContent = `₪${formatNumber(totalAmount)}`;
+                document.getElementById('summaryCount').textContent = `${filteredChecks.length} צ'קים`;
+                banner.classList.add('visible');
+            } else {
+                banner.classList.remove('visible');
+            }
+        }
+
+        // Render checks
+        function renderChecks() {
+            const container = document.getElementById('checksList');
+            
+            if (filteredChecks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">לא נמצאו צ'קים</h3>
+                        <p>נסה לשנות את הפילטרים</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filteredChecks.map((check, index) => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const dueDate = check.date__1 ? new Date(check.date__1) : null;
+                let daysUntil = 0;
+                let statusClass = 'future';
+                let statusText = 'עתידי';
+                
+                if (dueDate) {
+                    daysUntil = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                    if (check.group === 'group_mkzhynwd') {
+                        statusClass = 'cancelled';
+                        statusText = 'בוטל';
+                    } else if (daysUntil < 0) {
+                        statusClass = 'past';
+                        statusText = 'נפרע';
+                    } else if (daysUntil <= 7) {
+                        statusClass = 'soon';
+                        statusText = 'בקרוב';
+                    }
+                }
+                
+                const supplierColor = supplierColors[check.status] || '#64748B';
+                const hasImage = check.files__1 && check.files__1.length > 0;
+                const isCancelled = check.group === 'group_mkzhynwd';
+                
+                return `
+                    <div class="check-card ${isCancelled ? 'cancelled-check' : ''}" style="animation-delay: ${index * 0.03}s">
+                        <div class="check-card-header">
+                            <div class="check-number">
+                                <div class="check-icon">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <span class="check-num-text">צ'ק #${check.name}</span>
+                            </div>
+                            <span class="check-amount">₪${formatNumber(check.numbers__1)}</span>
+                        </div>
+                        <div class="check-card-body">
+                            <div class="check-info">
+                                <span class="check-info-label">ספק</span>
+                                <span class="supplier-badge" style="background: ${supplierColor}20; color: ${supplierColor}">${check.status || 'לא צוין'}</span>
+                            </div>
+                            <div class="check-info">
+                                <span class="check-info-label">תאריך פרעון</span>
+                                <span class="check-info-value">${formatDate(check.date__1)}</span>
+                            </div>
+                            ${check.notes ? `<div class="check-info"><span class="check-info-label">הערות</span><span class="check-info-value">${check.notes}</span></div>` : ''}
+                            ${hasImage ? `
+                            <div class="check-info">
+                                <button class="view-image-btn" onclick="openImageModal('${check.files__1}', '${check.name}', '₪${formatNumber(check.numbers__1)}')">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    צפה בצ'ק
+                                </button>
+                            </div>` : ''}
+                        </div>
+                        <div class="check-card-footer">
+                            <span class="check-status ${statusClass}">
+                                <span class="check-status-dot"></span>
+                                ${statusText}
+                            </span>
+                            <span class="check-days">${
+                                isCancelled ? 'בוטל' :
+                                daysUntil > 0 ? `עוד ${daysUntil} ימים` : 
+                                daysUntil < 0 ? `לפני ${Math.abs(daysUntil)} ימים` : 
+                                'היום'
+                            }</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter by group
+        function filterByGroup(group) {
+            currentFilters.group = group;
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.classList.toggle('active', card.dataset.group === group);
+            });
+            applyFilters();
+            updateActiveFilters();
+        }
+
+        // Set quick date
+        function setQuickDate(type) {
+            const today = new Date();
+            let fromDate, toDate;
+            
+            document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.quick-date-btn').classList.add('active');
+            
+            switch (type) {
+                case 'today':
+                    fromDate = toDate = today.toISOString().split('T')[0];
+                    break;
+                case 'week':
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - today.getDay());
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6);
+                    fromDate = startOfWeek.toISOString().split('T')[0];
+                    toDate = endOfWeek.toISOString().split('T')[0];
+                    break;
+                case 'nextWednesday':
+                    const nextWed = new Date(today);
+                    const daysUntilWed = (3 - today.getDay() + 7) % 7 || 7;
+                    nextWed.setDate(today.getDate() + daysUntilWed);
+                    fromDate = toDate = nextWed.toISOString().split('T')[0];
+                    break;
+                case 'month':
+                    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    fromDate = startOfMonth.toISOString().split('T')[0];
+                    toDate = endOfMonth.toISOString().split('T')[0];
+                    break;
+            }
+            
+            document.getElementById('dateFrom').value = fromDate;
+            document.getElementById('dateTo').value = toDate;
+            currentFilters.dateFrom = fromDate;
+            currentFilters.dateTo = toDate;
+            applyFilters();
+            updateActiveFilters();
+        }
+
+        // Clear date filters
+        function clearDateFilters() {
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            currentFilters.dateFrom = '';
+            currentFilters.dateTo = '';
+            document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
+            applyFilters();
+            updateActiveFilters();
+        }
+
+        // Update active filters display
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            const tags = [];
+            
+            if (currentFilters.group !== 'all') {
+                const groupNames = {
+                    'topics': 'לפני פרעון',
+                    'group_title': 'אחרי פרעון',
+                    'group_mkzhynwd': 'בוטלו'
+                };
+                tags.push(`<div class="filter-tag">קבוצה: ${groupNames[currentFilters.group]}<button onclick="clearFilter('group')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div>`);
+            }
+            
+            if (currentFilters.dateFrom) {
+                tags.push(`<div class="filter-tag">מ: ${formatDate(currentFilters.dateFrom)}<button onclick="clearFilter('dateFrom')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div>`);
+            }
+            
+            if (currentFilters.dateTo) {
+                tags.push(`<div class="filter-tag">עד: ${formatDate(currentFilters.dateTo)}<button onclick="clearFilter('dateTo')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div>`);
+            }
+            
+            container.innerHTML = tags.join('');
+        }
+
+        // Clear specific filter
+        function clearFilter(filterType) {
+            if (filterType === 'group') {
+                currentFilters.group = 'all';
+                document.querySelectorAll('.stat-card').forEach(card => {
+                    card.classList.toggle('active', card.dataset.group === 'all');
+                });
+            } else if (filterType === 'dateFrom') {
+                currentFilters.dateFrom = '';
+                document.getElementById('dateFrom').value = '';
+            } else if (filterType === 'dateTo') {
+                currentFilters.dateTo = '';
+                document.getElementById('dateTo').value = '';
+            }
+            document.querySelectorAll('.quick-date-btn').forEach(btn => btn.classList.remove('active'));
+            applyFilters();
+            updateActiveFilters();
+        }
+
+        // Clear search
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearch').classList.remove('visible');
+            currentFilters.search = '';
+            applyFilters();
+        }
+
+        // Toggle sort
+        function toggleSort() {
+            sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            document.getElementById('sortLabel').textContent = sortOrder === 'asc' ? 'מהקרוב' : 'מהרחוק';
+            applyFilters();
+        }
+
+        // Image modal
+        function openImageModal(imageUrl, checkName, amount) {
+            const modal = document.getElementById('imageModal');
+            const img = document.getElementById('modalImage');
+            const info = document.getElementById('modalInfo');
+            img.src = imageUrl;
+            info.innerHTML = `<strong>צ'ק #${checkName}</strong> - ${amount}`;
+            modal.classList.add('active');
+        }
+
+        function closeImageModal(event) {
+            if (!event || event.target.id === 'imageModal') {
+                document.getElementById('imageModal').classList.remove('active');
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            const searchInput = document.getElementById('searchInput');
+            const clearSearchBtn = document.getElementById('clearSearch');
+            
+            searchInput.addEventListener('input', (e) => {
+                currentFilters.search = e.target.value;
+                clearSearchBtn.classList.toggle('visible', e.target.value.length > 0);
+                applyFilters();
+            });
+            
+            document.getElementById('dateFrom').addEventListener('change', (e) => {
+                currentFilters.dateFrom = e.target.value;
+                applyFilters();
+                updateActiveFilters();
+            });
+            
+            document.getElementById('dateTo').addEventListener('change', (e) => {
+                currentFilters.dateTo = e.target.value;
+                applyFilters();
+                updateActiveFilters();
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setGreeting();
+            setupEventListeners();
+            loadData();
+        });
+
+        // Auto refresh every 5 minutes
+        setInterval(() => {
+            loadData();
+        }, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

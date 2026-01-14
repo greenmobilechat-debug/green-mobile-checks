@@ -301,6 +301,13 @@
             align-items: center;
             gap: 16px;
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .alert-banner:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
         }
 
         .alert-banner.visible {
@@ -985,6 +992,146 @@
             background: rgba(255,255,255,0.3);
         }
 
+        /* Alerts Modal */
+        .alerts-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .alerts-modal.active {
+            display: flex;
+        }
+
+        .alerts-modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .alerts-modal-header {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+
+        .alerts-modal-icon {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alerts-modal-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .alerts-modal-header h3 {
+            flex: 1;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .alerts-modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .alerts-modal-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .alerts-modal-body {
+            padding: 20px 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .alert-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .alert-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-row-date {
+            font-weight: 700;
+            color: #dc2626;
+            font-size: 1.1rem;
+        }
+
+        .alert-row-amount {
+            font-weight: 600;
+            color: #1a1a2e;
+            font-size: 1.1rem;
+        }
+
+        .alert-row-amount span {
+            color: #dc2626;
+        }
+
+        @media (max-width: 600px) {
+            .alerts-modal-content {
+                max-width: 95%;
+            }
+            
+            .alerts-modal-header {
+                padding: 16px 20px;
+            }
+            
+            .alerts-modal-header h3 {
+                font-size: 1rem;
+            }
+            
+            .alerts-modal-body {
+                padding: 16px 20px;
+            }
+            
+            .alert-row {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+        }
+
         /* Error State */
         .error-state {
             background: #fef2f2;
@@ -1076,14 +1223,14 @@
     <!-- Main Content -->
     <main class="main-content">
         <!-- Alert Banner -->
-        <div class="alert-banner" id="alertBanner">
+        <div class="alert-banner" id="alertBanner" onclick="openAlertsModal()">
             <div class="alert-icon">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
             <div class="alert-content">
-                <span class="alert-title">⚠️ שים לב!</span>
+                <span class="alert-title">⚠️ שים לב! (לחץ לפרטים)</span>
                 <div class="alert-marquee">
                     <div class="alert-marquee-content" id="alertMarqueeContent">
                         <!-- Will be populated by JS -->
@@ -1245,6 +1392,24 @@
             <button class="modal-close" onclick="closeImageModal()">&times;</button>
             <img src="" alt="Check Image" class="modal-image" id="modalImage">
             <div class="modal-info" id="modalInfo"></div>
+        </div>
+    </div>
+
+    <!-- Alerts Modal -->
+    <div class="alerts-modal" id="alertsModal" onclick="closeAlertsModal(event)">
+        <div class="alerts-modal-content">
+            <div class="alerts-modal-header">
+                <div class="alerts-modal-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3>התראות - תאריכים עם סכום גבוה</h3>
+                <button class="alerts-modal-close" onclick="closeAlertsModal()">&times;</button>
+            </div>
+            <div class="alerts-modal-body" id="alertsModalBody">
+                <!-- Will be populated by JS -->
+            </div>
         </div>
     </div>
 
@@ -1556,8 +1721,13 @@
                 .sort((a, b) => a[0].localeCompare(b[0])) // Sort by date
                 .map(([date, amount]) => ({
                     date: formatDate(date),
-                    amount: formatNumber(amount)
+                    rawDate: date,
+                    amount: formatNumber(amount),
+                    rawAmount: amount
                 }));
+            
+            // Store for modal
+            window.highAmountAlerts = highAmountDates;
             
             const alertBanner = document.getElementById('alertBanner');
             const marqueeContent = document.getElementById('alertMarqueeContent');
@@ -1576,6 +1746,30 @@
                 alertBanner.classList.add('visible');
             } else {
                 alertBanner.classList.remove('visible');
+            }
+        }
+
+        // Open alerts modal
+        function openAlertsModal() {
+            const modal = document.getElementById('alertsModal');
+            const body = document.getElementById('alertsModalBody');
+            
+            if (window.highAmountAlerts && window.highAmountAlerts.length > 0) {
+                body.innerHTML = window.highAmountAlerts.map(item => 
+                    `<div class="alert-row">
+                        <div class="alert-row-date">${item.date}</div>
+                        <div class="alert-row-amount">סכום: <span>₪${item.amount}</span></div>
+                    </div>`
+                ).join('');
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // Close alerts modal
+        function closeAlertsModal(event) {
+            if (!event || event.target.id === 'alertsModal') {
+                document.getElementById('alertsModal').classList.remove('active');
             }
         }
 
@@ -1888,6 +2082,7 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     closeImageModal();
+                    closeAlertsModal();
                 }
             });
         }

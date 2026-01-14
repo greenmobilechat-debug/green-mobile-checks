@@ -290,6 +290,122 @@
             }
         }
 
+        /* Alert Banner */
+        .alert-banner {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 2px solid #ef4444;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .alert-banner.visible {
+            display: flex;
+        }
+
+        .alert-icon {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            background: #ef4444;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .alert-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .alert-title {
+            display: block;
+            font-weight: 700;
+            color: #dc2626;
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .alert-marquee {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .alert-marquee-content {
+            display: inline-flex;
+            gap: 40px;
+            animation: marquee 20s linear infinite;
+            white-space: nowrap;
+        }
+
+        .alert-marquee:hover .alert-marquee-content {
+            animation-play-state: paused;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .alert-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #1a1a2e;
+        }
+
+        .alert-date {
+            font-weight: 700;
+            color: #dc2626;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #fca5a5;
+        }
+
+        .alert-amount {
+            font-weight: 600;
+            color: #dc2626;
+        }
+
+        @media (max-width: 600px) {
+            .alert-banner {
+                padding: 12px 16px;
+                gap: 12px;
+            }
+            
+            .alert-icon {
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+            }
+            
+            .alert-icon svg {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .alert-title {
+                font-size: 0.9rem;
+            }
+            
+            .alert-item {
+                font-size: 0.85rem;
+            }
+        }
+
         .stat-card {
             background: white;
             border-radius: 16px;
@@ -959,6 +1075,23 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Alert Banner -->
+        <div class="alert-banner" id="alertBanner">
+            <div class="alert-icon">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div class="alert-content">
+                <span class="alert-title">⚠️ שים לב!</span>
+                <div class="alert-marquee">
+                    <div class="alert-marquee-content" id="alertMarqueeContent">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Greeting -->
         <div class="greeting">
             <h2 id="greeting">צהריים טובים!</h2>
@@ -1275,6 +1408,7 @@
                 // Update UI
                 hideLoading();
                 updateStats();
+                checkHighAmountDates();
                 applyFilters();
                 updateLastUpdate();
                 
@@ -1395,6 +1529,54 @@
             
             document.getElementById('cancelledCount').textContent = cancelled.length;
             document.getElementById('cancelledAmount').textContent = `₪${formatNumber(cancelled.reduce((s, c) => s + c.numbers__1, 0))}`;
+        }
+
+        // Check for dates with high amounts (over 200,000)
+        function checkHighAmountDates() {
+            const THRESHOLD = 200000; // 200,000 ש"ח
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Get only pending checks (before due date)
+            const pendingChecks = allChecks.filter(c => c.group === 'topics' && c.date__1 >= today);
+            
+            // Group by date and sum amounts
+            const dateAmounts = {};
+            pendingChecks.forEach(check => {
+                if (check.date__1) {
+                    if (!dateAmounts[check.date__1]) {
+                        dateAmounts[check.date__1] = 0;
+                    }
+                    dateAmounts[check.date__1] += check.numbers__1;
+                }
+            });
+            
+            // Find dates over threshold
+            const highAmountDates = Object.entries(dateAmounts)
+                .filter(([date, amount]) => amount >= THRESHOLD)
+                .sort((a, b) => a[0].localeCompare(b[0])) // Sort by date
+                .map(([date, amount]) => ({
+                    date: formatDate(date),
+                    amount: formatNumber(amount)
+                }));
+            
+            const alertBanner = document.getElementById('alertBanner');
+            const marqueeContent = document.getElementById('alertMarqueeContent');
+            
+            if (highAmountDates.length > 0) {
+                // Build marquee content
+                const alertsHtml = highAmountDates.map(item => 
+                    `<span class="alert-item">
+                        <span class="alert-date">${item.date}</span>
+                        סכום לפרעון: <span class="alert-amount">₪${item.amount}</span>
+                    </span>`
+                ).join('');
+                
+                // Duplicate for seamless loop
+                marqueeContent.innerHTML = alertsHtml + alertsHtml;
+                alertBanner.classList.add('visible');
+            } else {
+                alertBanner.classList.remove('visible');
+            }
         }
 
         // Update summary banner

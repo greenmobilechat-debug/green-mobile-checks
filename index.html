@@ -1594,12 +1594,8 @@
 
         // Image modal
         function openImageModal(imageUrl, checkName, amount) {
-            const modal = document.getElementById('imageModal');
-            const img = document.getElementById('modalImage');
-            const info = document.getElementById('modalInfo');
-            img.src = imageUrl;
-            info.innerHTML = `<strong>צ'ק #${checkName}</strong> - ${amount}`;
-            modal.classList.add('active');
+            // Open image in new tab - works better on mobile with Monday's protected URLs
+            window.open(imageUrl, '_blank');
         }
 
         function closeImageModal(event) {

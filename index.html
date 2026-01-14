@@ -809,12 +809,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 1000;
             display: none;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            flex-direction: column;
         }
 
         .image-modal.active {
@@ -822,15 +823,19 @@
         }
 
         .modal-content {
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 95%;
+            max-height: 85%;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .modal-image {
             max-width: 100%;
-            max-height: 80vh;
+            max-height: 70vh;
             border-radius: 8px;
+            object-fit: contain;
         }
 
         .modal-info {
@@ -838,17 +843,29 @@
             text-align: center;
             margin-top: 16px;
             font-size: 1.1rem;
+            line-height: 1.6;
         }
 
         .modal-close {
-            position: absolute;
-            top: -40px;
-            left: 0;
-            background: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            font-size: 2rem;
+            font-size: 1.5rem;
             cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         /* Error State */
@@ -1153,6 +1170,28 @@
             }
             
             return await response.json();
+        }
+
+        // Extract asset ID from Monday protected URL
+        function extractAssetId(url) {
+            if (!url) return null;
+            const match = url.match(/resources\/(\d+)\//);
+            return match ? match[1] : null;
+        }
+
+        // Get public URL for an asset
+        async function getPublicUrl(assetId) {
+            if (!assetId) return null;
+            try {
+                const query = `query { assets(ids: [${assetId}]) { public_url } }`;
+                const result = await fetchFromMonday(query);
+                if (result.data && result.data.assets && result.data.assets[0]) {
+                    return result.data.assets[0].public_url;
+                }
+            } catch(e) {
+                console.error('Error getting public URL:', e);
+            }
+            return null;
         }
 
         // Load all checks from Monday.com
@@ -1593,9 +1632,29 @@
         }
 
         // Image modal
-        function openImageModal(imageUrl, checkName, amount) {
-            // Open image in new tab - works better on mobile with Monday's protected URLs
-            window.open(imageUrl, '_blank');
+        async function openImageModal(protectedUrl, checkName, amount) {
+            const modal = document.getElementById('imageModal');
+            const img = document.getElementById('modalImage');
+            const info = document.getElementById('modalInfo');
+            
+            // Show loading state
+            modal.classList.add('active');
+            img.src = '';
+            info.innerHTML = `<strong>צ'ק #${checkName}</strong> - ${amount}<br><small>טוען תמונה...</small>`;
+            
+            // Get public URL
+            const assetId = extractAssetId(protectedUrl);
+            if (assetId) {
+                const publicUrl = await getPublicUrl(assetId);
+                if (publicUrl) {
+                    img.src = publicUrl;
+                    info.innerHTML = `<strong>צ'ק #${checkName}</strong> - ${amount}`;
+                } else {
+                    info.innerHTML = `<strong>צ'ק #${checkName}</strong> - ${amount}<br><small style="color:#ef4444">לא ניתן לטעון תמונה</small>`;
+                }
+            } else {
+                info.innerHTML = `<strong>צ'ק #${checkName}</strong> - ${amount}<br><small style="color:#ef4444">לא ניתן לטעון תמונה</small>`;
+            }
         }
 
         function closeImageModal(event) {

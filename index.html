@@ -344,10 +344,9 @@
 
         .alert-marquee-content {
             display: inline-flex;
-            gap: 60px;
-            animation: marquee 30s linear infinite;
+            gap: 80px;
+            animation: marquee 45s linear infinite;
             white-space: nowrap;
-            padding-right: 20px;
         }
 
         .alert-marquee:hover .alert-marquee-content {
@@ -355,8 +354,8 @@
         }
 
         @keyframes marquee {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(50%); }
         }
 
         .alert-item {

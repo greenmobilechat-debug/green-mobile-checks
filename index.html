@@ -806,6 +806,16 @@
             opacity: 0.9;
         }
 
+        .bank-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
         .check-number-wrapper {
             display: flex;
             flex-direction: column;
@@ -1448,7 +1458,7 @@
             'מע״מ': '#175a63', 'א.ד.ד ניהול': '#9aadbd', 'פנינה פאי': '#757575'
         };
 
-        // Bank logos (using official logo URLs)
+        // Bank logos (using official logo URLs from Wikipedia)
         const bankLogos = {
             'בנק פועלים': 'https://upload.wikimedia.org/wikipedia/he/thumb/b/b1/BankHapoalim.svg/200px-BankHapoalim.svg.png',
             'בנק לאומי': 'https://upload.wikimedia.org/wikipedia/he/thumb/e/e7/Leumi_2017.svg/200px-Leumi_2017.svg.png',
@@ -1456,13 +1466,23 @@
             'הבנק הבינלאומי': 'https://upload.wikimedia.org/wikipedia/he/thumb/5/53/Logo_of_First_International_Bank_of_Israel.svg/200px-Logo_of_First_International_Bank_of_Israel.svg.png'
         };
 
+        // Bank colors for fallback badges
+        const bankColors = {
+            'בנק פועלים': '#e41e26',
+            'בנק לאומי': '#0066b3',
+            'בנק מזרחי': '#00a650',
+            'הבנק הבינלאומי': '#1a3668'
+        };
+
         // Get bank logo HTML
         function getBankLogo(bankName) {
+            if (!bankName) return '';
             const logoUrl = bankLogos[bankName];
+            const color = bankColors[bankName] || '#666';
             if (logoUrl) {
-                return `<img src="${logoUrl}" alt="${bankName}" class="bank-logo" onerror="this.style.display='none'">`;
+                return `<img src="${logoUrl}" alt="${bankName}" class="bank-logo" onerror="this.outerHTML='<span class=\\'bank-badge\\' style=\\'background:${color}\\'>${bankName.replace('בנק ', '')}</span>'">`;
             }
-            return '';
+            return `<span class="bank-badge" style="background:${color}">${bankName.replace('בנק ', '')}</span>`;
         }
 
         // State

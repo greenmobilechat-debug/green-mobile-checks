@@ -1182,7 +1182,6 @@
                                     column_values(ids: ["status", "numbers__1", "date__1", "files__1", "text7__1"]) {
                                         id
                                         text
-                                        value
                                     }
                                 }
                             }
@@ -1205,26 +1204,16 @@
                 allChecks = allItems
                     .map(item => {
                         const cols = {};
-                        const colValues = {};
-                        let fileUrl = null;
                         
                         item.column_values.forEach(col => {
                             cols[col.id] = col.text;
-                            colValues[col.id] = col.value;
-                            
-                            // Parse file URL from value JSON
-                            if (col.id === 'files__1' && col.value) {
-                                try {
-                                    const parsed = JSON.parse(col.value);
-                                    if (parsed && parsed.files && parsed.files.length > 0) {
-                                        fileUrl = parsed.files[0].assetUrl || parsed.files[0].url || null;
-                                    }
-                                } catch(e) {}
-                            }
                         });
                         
                         const amount = parseFloat(cols.numbers__1) || 0;
                         const dueDate = cols.date__1 || '';
+                        
+                        // File URL is directly in text field
+                        const fileUrl = cols.files__1 || null;
                         
                         return {
                             id: item.id,

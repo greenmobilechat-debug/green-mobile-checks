@@ -1772,8 +1772,7 @@
                     <div class="form-row">
                         <label>בנק</label>
                         <select id="addCheckBank">
-                            <option value="">בחר בנק</option>
-                            <option value="בנק פועלים">בנק פועלים</option>
+                            <option value="בנק פועלים" selected>בנק פועלים</option>
                             <option value="בנק לאומי">בנק לאומי</option>
                             <option value="בנק מזרחי">בנק מזרחי</option>
                             <option value="הבנק הבינלאומי">הבנק הבינלאומי</option>
@@ -2220,7 +2219,7 @@
             document.getElementById('addCheckSupplier').value = '';
             document.getElementById('addCheckAmount').value = '';
             document.getElementById('addCheckDueDate').value = '';
-            document.getElementById('addCheckBank').value = '';
+            document.getElementById('addCheckBank').value = 'בנק פועלים';
             document.getElementById('addCheckNotes').value = '';
             document.getElementById('imagePreview').style.display = 'none';
             document.getElementById('fileUploadPlaceholder').style.display = 'flex';
@@ -2315,17 +2314,16 @@
             try {
                 // Create item name (check number)
                 const itemName = checkNumber;
+                const entryDate = document.getElementById('addCheckEntryDate').value;
 
                 // Build column values with correct format for Monday.com
                 const columnValues = {
                     "status": { "label": supplier },
                     "numbers__1": parseFloat(amount).toString(),
-                    "date__1": { "date": dueDate }
+                    "date__1": { "date": dueDate },
+                    "date4": { "date": entryDate },
+                    "dropdown__1": { "labels": [bank] }
                 };
-
-                if (bank) {
-                    columnValues["dropdown__1"] = { "labels": [bank] };
-                }
 
                 if (notes) {
                     columnValues["text7__1"] = notes;

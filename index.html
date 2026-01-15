@@ -2287,13 +2287,13 @@
                     await uploadFileToMonday(newItemId, imageFile);
                 }
 
-                alert('✅ הצ'ק נוסף בהצלחה!');
+                alert('✅ הצק נוסף בהצלחה!');
                 closeAddCheckModal();
                 loadData(); // Refresh the list
 
             } catch (error) {
                 console.error('Error adding check:', error);
-                alert('❌ שגיאה בהוספת הצ'ק: ' + error.message);
+                alert('❌ שגיאה בהוספת הצק: ' + error.message);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.querySelector('.btn-text').style.display = 'inline';

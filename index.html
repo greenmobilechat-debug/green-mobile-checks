@@ -180,6 +180,32 @@
             height: 18px;
         }
 
+        .add-check-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .add-check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .add-check-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
         .monday-btn {
             background: linear-gradient(135deg, #ff3d57 0%, #ff6b6b 100%);
             border: none;
@@ -1191,6 +1217,210 @@
             }
         }
 
+        /* Add Check Modal */
+        .add-check-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .add-check-modal.active {
+            display: flex;
+        }
+
+        .add-check-modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .add-check-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 20px 20px 0 0;
+            color: white;
+        }
+
+        .add-check-modal-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .add-check-modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-check-modal-body {
+            padding: 24px;
+        }
+
+        .add-check-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-row label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-row input,
+        .form-row select,
+        .form-row textarea {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus,
+        .form-row textarea:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-row input[readonly] {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .form-row textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .file-upload-area {
+            position: relative;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-area:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .file-upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+        }
+
+        .file-upload-placeholder svg {
+            width: 40px;
+            height: 40px;
+            color: #10b981;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .cancel-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 10px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .submit-btn {
+            flex: 2;
+            padding: 14px;
+            border: none;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 10px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* Error State */
         .error-state {
             background: #fef2f2;
@@ -1263,6 +1493,12 @@
                     <span class="live-dot"></span>
                     <span>מחובר למאנדיי</span>
                 </div>
+                <button class="add-check-btn" onclick="openAddCheckModal()">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    הוסף צ'ק
+                </button>
                 <button class="refresh-btn" onclick="loadData()" id="refreshBtn">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -1476,6 +1712,75 @@
             </div>
             <div class="alerts-modal-body" id="alertsModalBody">
                 <!-- Will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Check Modal -->
+    <div class="add-check-modal" id="addCheckModal" onclick="closeAddCheckModal(event)">
+        <div class="add-check-modal-content">
+            <div class="add-check-modal-header">
+                <h3>➕ הוספת צ'ק חדש</h3>
+                <button class="add-check-modal-close" onclick="closeAddCheckModal()">&times;</button>
+            </div>
+            <div class="add-check-modal-body">
+                <div class="add-check-form">
+                    <div class="form-row">
+                        <label>תאריך הכנסה</label>
+                        <input type="date" id="addCheckEntryDate" readonly>
+                    </div>
+                    <div class="form-row">
+                        <label>מספר צ'ק *</label>
+                        <input type="text" id="addCheckNumber" placeholder="הכנס מספר צ'ק" required>
+                    </div>
+                    <div class="form-row">
+                        <label>למי (ספק) *</label>
+                        <input type="text" id="addCheckSupplier" placeholder="שם הספק" required>
+                    </div>
+                    <div class="form-row">
+                        <label>סכום *</label>
+                        <input type="number" id="addCheckAmount" placeholder="סכום בש״ח" required>
+                    </div>
+                    <div class="form-row">
+                        <label>תאריך פרעון *</label>
+                        <input type="date" id="addCheckDueDate" required>
+                    </div>
+                    <div class="form-row">
+                        <label>בנק</label>
+                        <select id="addCheckBank">
+                            <option value="">בחר בנק</option>
+                            <option value="בנק פועלים">בנק פועלים</option>
+                            <option value="בנק לאומי">בנק לאומי</option>
+                            <option value="בנק מזרחי">בנק מזרחי</option>
+                            <option value="הבנק הבינלאומי">הבנק הבינלאומי</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>הערות</label>
+                        <textarea id="addCheckNotes" placeholder="הערות נוספות (אופציונלי)"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label>צילום צ'ק</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <input type="file" id="addCheckImage" accept="image/*" capture="environment" onchange="handleFileSelect(event)">
+                            <div class="file-upload-placeholder" id="fileUploadPlaceholder">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>לחץ לצילום או בחירת תמונה</span>
+                            </div>
+                            <img id="imagePreview" class="image-preview" style="display:none;">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" onclick="closeAddCheckModal()">ביטול</button>
+                        <button type="button" class="submit-btn" onclick="submitNewCheck()" id="submitCheckBtn">
+                            <span class="btn-text">הוסף צ'ק</span>
+                            <span class="btn-loading" style="display:none;">שומר...</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1878,6 +2183,140 @@
             }
         }
 
+        // Add Check Modal functions
+        function openAddCheckModal() {
+            const modal = document.getElementById('addCheckModal');
+            // Set today's date as entry date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('addCheckEntryDate').value = today;
+            // Clear form
+            document.getElementById('addCheckNumber').value = '';
+            document.getElementById('addCheckSupplier').value = '';
+            document.getElementById('addCheckAmount').value = '';
+            document.getElementById('addCheckDueDate').value = '';
+            document.getElementById('addCheckBank').value = '';
+            document.getElementById('addCheckNotes').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('fileUploadPlaceholder').style.display = 'flex';
+            modal.classList.add('active');
+        }
+
+        function closeAddCheckModal(event) {
+            if (!event || event.target.id === 'addCheckModal') {
+                document.getElementById('addCheckModal').classList.remove('active');
+            }
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('fileUploadPlaceholder').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        let uploadedFileAsset = null;
+
+        async function submitNewCheck() {
+            const checkNumber = document.getElementById('addCheckNumber').value.trim();
+            const supplier = document.getElementById('addCheckSupplier').value.trim();
+            const amount = document.getElementById('addCheckAmount').value;
+            const dueDate = document.getElementById('addCheckDueDate').value;
+            const bank = document.getElementById('addCheckBank').value;
+            const notes = document.getElementById('addCheckNotes').value.trim();
+            const imageFile = document.getElementById('addCheckImage').files[0];
+
+            // Validate required fields
+            if (!checkNumber || !supplier || !amount || !dueDate) {
+                alert('נא למלא את כל השדות המסומנים ב-*');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitCheckBtn');
+            submitBtn.disabled = true;
+            submitBtn.querySelector('.btn-text').style.display = 'none';
+            submitBtn.querySelector('.btn-loading').style.display = 'inline';
+
+            try {
+                // Create item name (check number)
+                const itemName = checkNumber;
+
+                // Build column values
+                const columnValues = {
+                    "status": supplier,
+                    "numbers__1": parseFloat(amount),
+                    "date__1": { "date": dueDate }
+                };
+
+                if (bank) {
+                    columnValues["dropdown__1"] = bank;
+                }
+
+                if (notes) {
+                    columnValues["text7__1"] = notes;
+                }
+
+                // Create item in Monday.com
+                const mutation = `mutation {
+                    create_item(
+                        board_id: ${BOARD_ID},
+                        group_id: "topics",
+                        item_name: "${itemName}",
+                        column_values: ${JSON.stringify(JSON.stringify(columnValues))}
+                    ) {
+                        id
+                    }
+                }`;
+
+                const result = await fetchFromMonday(mutation);
+
+                if (result.errors) {
+                    throw new Error(result.errors[0].message);
+                }
+
+                const newItemId = result.data.create_item.id;
+
+                // If there's an image, upload it
+                if (imageFile) {
+                    await uploadFileToMonday(newItemId, imageFile);
+                }
+
+                alert('✅ הצ'ק נוסף בהצלחה!');
+                closeAddCheckModal();
+                loadData(); // Refresh the list
+
+            } catch (error) {
+                console.error('Error adding check:', error);
+                alert('❌ שגיאה בהוספת הצ'ק: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.querySelector('.btn-text').style.display = 'inline';
+                submitBtn.querySelector('.btn-loading').style.display = 'none';
+            }
+        }
+
+        async function uploadFileToMonday(itemId, file) {
+            const formData = new FormData();
+            formData.append('query', `mutation ($file: File!) { add_file_to_column(item_id: ${itemId}, column_id: "files__1", file: $file) { id } }`);
+            formData.append('variables[file]', file);
+
+            const response = await fetch(API_URL + '/file', {
+                method: 'POST',
+                headers: {
+                    'Authorization': API_TOKEN
+                },
+                body: formData
+            });
+
+            return await response.json();
+        }
+
         // Update summary banner
         function updateSummaryBanner() {
             const banner = document.getElementById('summaryBanner');
@@ -2234,6 +2673,7 @@
                 if (e.key === 'Escape') {
                     closeImageModal();
                     closeAlertsModal();
+                    closeAddCheckModal();
                 }
             });
         }

@@ -2316,15 +2316,15 @@
                 // Create item name (check number)
                 const itemName = checkNumber;
 
-                // Build column values
+                // Build column values with correct format for Monday.com
                 const columnValues = {
-                    "status": supplier,
-                    "numbers__1": parseFloat(amount),
+                    "status": { "label": supplier },
+                    "numbers__1": parseFloat(amount).toString(),
                     "date__1": { "date": dueDate }
                 };
 
                 if (bank) {
-                    columnValues["dropdown__1"] = bank;
+                    columnValues["dropdown__1"] = { "labels": [bank] };
                 }
 
                 if (notes) {

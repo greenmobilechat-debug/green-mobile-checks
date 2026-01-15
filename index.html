@@ -1421,6 +1421,28 @@
             transform: none;
         }
 
+        .supplier-hint {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .supplier-hint.warning {
+            display: block;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        .supplier-hint.success {
+            display: block;
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
         /* Error State */
         .error-state {
             background: #fef2f2;
@@ -1735,7 +1757,9 @@
                     </div>
                     <div class="form-row">
                         <label>למי (ספק) *</label>
-                        <input type="text" id="addCheckSupplier" placeholder="שם הספק" required>
+                        <input type="text" id="addCheckSupplier" list="suppliersList" placeholder="הקלד או בחר ספק" required autocomplete="off" oninput="checkSupplierExists()" onchange="checkSupplierExists()">
+                        <datalist id="suppliersList"></datalist>
+                        <div class="supplier-hint" id="supplierHint"></div>
                     </div>
                     <div class="form-row">
                         <label>סכום *</label>
@@ -2184,6 +2208,8 @@
         }
 
         // Add Check Modal functions
+        let existingSuppliers = [];
+
         function openAddCheckModal() {
             const modal = document.getElementById('addCheckModal');
             // Set today's date as entry date
@@ -2198,7 +2224,50 @@
             document.getElementById('addCheckNotes').value = '';
             document.getElementById('imagePreview').style.display = 'none';
             document.getElementById('fileUploadPlaceholder').style.display = 'flex';
+            document.getElementById('supplierHint').className = 'supplier-hint';
+            document.getElementById('supplierHint').textContent = '';
+            
+            // Populate suppliers list from existing checks
+            populateSuppliersList();
+            
             modal.classList.add('active');
+        }
+
+        function populateSuppliersList() {
+            // Get unique suppliers from allChecks
+            existingSuppliers = [...new Set(allChecks.map(c => c.status).filter(s => s && s.trim()))];
+            existingSuppliers.sort((a, b) => a.localeCompare(b, 'he'));
+            
+            const datalist = document.getElementById('suppliersList');
+            datalist.innerHTML = existingSuppliers.map(s => `<option value="${s}">`).join('');
+        }
+
+        function checkSupplierExists() {
+            const input = document.getElementById('addCheckSupplier');
+            const hint = document.getElementById('supplierHint');
+            const value = input.value.trim();
+            
+            if (!value) {
+                hint.className = 'supplier-hint';
+                hint.textContent = '';
+                return;
+            }
+            
+            const exactMatch = existingSuppliers.find(s => s === value);
+            const similarMatch = existingSuppliers.find(s => 
+                s.toLowerCase() === value.toLowerCase() && s !== value
+            );
+            
+            if (exactMatch) {
+                hint.className = 'supplier-hint success';
+                hint.textContent = '✓ ספק קיים במערכת';
+            } else if (similarMatch) {
+                hint.className = 'supplier-hint warning';
+                hint.textContent = `⚠️ האם התכוונת ל: ${similarMatch}?`;
+            } else {
+                hint.className = 'supplier-hint warning';
+                hint.textContent = '⚠️ ספק חדש - יתווסף למערכת';
+            }
         }
 
         function closeAddCheckModal(event) {

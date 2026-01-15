@@ -1306,7 +1306,7 @@
 
         <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card total active" data-group="all">
+            <div class="stat-card total" data-group="all">
                 <div class="stat-card-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1316,7 +1316,7 @@
                 <p>סה"כ צ'קים</p>
                 <div class="amount" id="totalAmount">₪0</div>
             </div>
-            <div class="stat-card pending" data-group="topics">
+            <div class="stat-card pending active" data-group="topics">
                 <div class="stat-card-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -2243,8 +2243,6 @@
             setGreeting();
             setupEventListeners();
             loadData();
-            // Set default card as active (לפני פרעון)
-            document.querySelector('.stat-card[data-group="topics"]')?.classList.add('active');
         });
 
         // Auto refresh every 5 minutes

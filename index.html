@@ -730,22 +730,32 @@
             color: #1a1a2e;
         }
 
+        .sort-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
         .sort-btn {
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 16px;
+            padding: 8px 12px;
             border: 2px solid #e2e8f0;
             background: white;
             border-radius: 8px;
             cursor: pointer;
             font-family: 'Heebo', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: all 0.3s;
         }
 
         .sort-btn:hover {
             border-color: #4eccc6;
+        }
+
+        .sort-btn.active {
+            border-color: #4eccc6;
+            background: #f0fdfa;
         }
 
         .sort-btn svg {
@@ -1420,12 +1430,20 @@
             <div class="results-count">
                 <strong id="visibleCount">0</strong> צ'קים מוצגים
             </div>
-            <button class="sort-btn" onclick="toggleSort()">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                </svg>
-                <span id="sortLabel">מהקרוב</span>
-            </button>
+            <div class="sort-buttons">
+                <button class="sort-btn" onclick="toggleSort()">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span id="sortLabel">קרוב</span>
+                </button>
+                <button class="sort-btn" onclick="toggleAmountSort()">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="amountSortLabel">גבוה</span>
+                </button>
+            </div>
         </div>
 
         <!-- Checks List -->
@@ -1516,8 +1534,10 @@
         // State
         let allChecks = [];
         let filteredChecks = [];
-        let currentFilters = { search: '', dateFrom: '', dateTo: '', group: 'all' };
+        let currentFilters = { search: '', dateFrom: '', dateTo: '', group: 'topics' };
         let sortOrder = 'asc';
+        let sortBy = 'date'; // 'date' or 'amount'
+        let amountSortOrder = 'desc'; // desc = high first
 
         // Calculate date range (3 months back, all future)
         function getDateRange() {
@@ -1728,9 +1748,10 @@
                     const matchesName = check.name.toLowerCase().includes(searchLower);
                     const matchesSupplier = check.status && check.status.toLowerCase().includes(searchLower);
                     const matchesNotes = check.notes && check.notes.toLowerCase().includes(searchLower);
+                    const matchesBank = check.bank && check.bank.toLowerCase().includes(searchLower);
                     const searchNum = parseFloat(currentFilters.search.replace(/,/g, ''));
                     const matchesAmount = !isNaN(searchNum) && check.numbers__1.toString().includes(searchNum.toString());
-                    if (!matchesName && !matchesSupplier && !matchesNotes && !matchesAmount) return false;
+                    if (!matchesName && !matchesSupplier && !matchesNotes && !matchesAmount && !matchesBank) return false;
                 }
                 
                 // Date filters
@@ -1742,9 +1763,15 @@
             
             // Sort
             filteredChecks.sort((a, b) => {
-                const dateA = a.date__1 || '9999-12-31';
-                const dateB = b.date__1 || '9999-12-31';
-                return sortOrder === 'asc' ? dateA.localeCompare(dateB) : dateB.localeCompare(dateA);
+                if (sortBy === 'amount') {
+                    const amountA = a.numbers__1 || 0;
+                    const amountB = b.numbers__1 || 0;
+                    return amountSortOrder === 'desc' ? amountB - amountA : amountA - amountB;
+                } else {
+                    const dateA = a.date__1 || '9999-12-31';
+                    const dateB = b.date__1 || '9999-12-31';
+                    return sortOrder === 'asc' ? dateA.localeCompare(dateB) : dateB.localeCompare(dateA);
+                }
             });
             
             renderChecks();
@@ -2083,11 +2110,30 @@
             applyFilters();
         }
 
-        // Toggle sort
+        // Toggle sort by date
         function toggleSort() {
+            sortBy = 'date';
             sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-            document.getElementById('sortLabel').textContent = sortOrder === 'asc' ? 'מהקרוב' : 'מהרחוק';
+            document.getElementById('sortLabel').textContent = sortOrder === 'asc' ? 'קרוב' : 'רחוק';
+            updateSortButtons();
             applyFilters();
+        }
+
+        // Toggle sort by amount
+        function toggleAmountSort() {
+            sortBy = 'amount';
+            amountSortOrder = amountSortOrder === 'desc' ? 'asc' : 'desc';
+            document.getElementById('amountSortLabel').textContent = amountSortOrder === 'desc' ? 'גבוה' : 'נמוך';
+            updateSortButtons();
+            applyFilters();
+        }
+
+        // Update sort button styles
+        function updateSortButtons() {
+            const sortBtns = document.querySelectorAll('.sort-btn');
+            sortBtns.forEach((btn, index) => {
+                btn.classList.toggle('active', (index === 0 && sortBy === 'date') || (index === 1 && sortBy === 'amount'));
+            });
         }
 
         // Image modal
@@ -2197,6 +2243,8 @@
             setGreeting();
             setupEventListeners();
             loadData();
+            // Set default card as active (לפני פרעון)
+            document.querySelector('.stat-card[data-group="topics"]')?.classList.add('active');
         });
 
         // Auto refresh every 5 minutes

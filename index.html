@@ -2316,6 +2316,37 @@
                 const itemName = checkNumber;
                 const entryDate = document.getElementById('addCheckEntryDate').value;
 
+                // Check if supplier exists, if not - create it first
+                const supplierExists = existingSuppliers.includes(supplier);
+                if (!supplierExists) {
+                    // Add new label to dropdown column
+                    const createLabelMutation = `mutation {
+                        change_column_value(
+                            board_id: ${BOARD_ID},
+                            item_id: 1,
+                            column_id: "dropdown_mm0gxfbd",
+                            value: ${JSON.stringify(JSON.stringify({ "labels": [supplier] }))}
+                        ) {
+                            id
+                        }
+                    }`;
+                    
+                    // Try to create the label by updating column settings
+                    const addLabelMutation = `mutation {
+                        change_column_metadata(
+                            board_id: ${BOARD_ID},
+                            column_id: "dropdown_mm0gxfbd",
+                            column_property: settings_str,
+                            value: ${JSON.stringify(JSON.stringify({ "labels": [{ "name": supplier }] }))}
+                        ) {
+                            id
+                        }
+                    }`;
+                    
+                    // Actually, for dropdown we need to use create_or_get_label
+                    // Let's try a different approach - create with the label and it should auto-create
+                }
+
                 // Build column values with correct format for Monday.com
                 const columnValues = {
                     "dropdown_mm0gxfbd": { "labels": [supplier] },
@@ -2335,7 +2366,8 @@
                         board_id: ${BOARD_ID},
                         group_id: "topics",
                         item_name: "${itemName}",
-                        column_values: ${JSON.stringify(JSON.stringify(columnValues))}
+                        column_values: ${JSON.stringify(JSON.stringify(columnValues))},
+                        create_labels_if_missing: true
                     ) {
                         id
                     }
